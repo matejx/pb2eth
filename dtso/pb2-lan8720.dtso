@@ -1,0 +1,76 @@
+/dts-v1/;
+/plugin/;
+
+#include "ti/k3-pinctrl.h"
+#include <dt-bindings/gpio/gpio.h>
+
+/ {
+    compatible = "beagle,am62-pocketbeagle2", "ti,am625";
+};
+
+&{/chosen} {
+    overlays {
+        pb2-lan8720.kernel = __TIMESTAMP__;
+    };
+};
+
+&main_pmx0 {
+    pb2_lan8720_pins: pb2-lan8720-pins {
+        pinctrl-single,pins = <
+            AM62X_IOPAD(0x15c, PIN_INPUT,  0) /* MDIO,    P2.03,  PADCONFIG87 */
+            AM62X_IOPAD(0x160, PIN_OUTPUT, 0) /* MDC,     P2.01A, PADCONFIG88 */
+            AM62X_IOPAD(0x164, PIN_OUTPUT, 1) /* TX_EN,   P1.02A, PADCONFIG89 */
+            AM62X_IOPAD(0x168, PIN_INPUT,  1) /* CRS_DV,  P1.35,  PADCONFIG90 */
+            AM62X_IOPAD(0x16c, PIN_OUTPUT, 1) /* TXD0,    P1.04A, PADCONFIG91 */
+            AM62X_IOPAD(0x170, PIN_OUTPUT, 1) /* TXD1,    P2.31A, PADCONFIG92 */
+            AM62X_IOPAD(0x17c, PIN_INPUT,  1) /* RX_ER,   P1.19,  PADCONFIG95 */
+            AM62X_IOPAD(0x180, PIN_INPUT,  1) /* REF_CLK, P1.34,  PADCONFIG96 */
+            AM62X_IOPAD(0x184, PIN_INPUT,  1) /* RXD0,    P1.27,  PADCONFIG97 */
+            AM62X_IOPAD(0x188, PIN_INPUT,  1) /* RXD1,    P1.25,  PADCONFIG98 */
+            AM62X_IOPAD(0x0d4, PIN_OUTPUT, 7) /* PHY_RST, P2.33,  PADCONFIG53, GPIO0_52, paired with reset-gpios below */
+        >;
+    };
+};
+
+&cpsw3g {
+    pinctrl-names = "default";
+    pinctrl-0 = <&pb2_lan8720_pins>;
+
+    status = "okay";
+};
+
+&cpsw3g_mdio {
+    #address-cells = <1>;
+    #size-cells = <0>;
+    status = "okay";
+
+    reset-gpios = <&main_gpio0 52 GPIO_ACTIVE_LOW>; // GPIO0_52 (P2.33)
+    reset-delay-us = <5000>;
+
+    lan8720: ethernet-phy@0 {
+        compatible = "ethernet-phy-ieee802.3-c22";
+        reg = <0>;
+    };
+};
+
+&cpsw_port1 {
+    status = "disabled";
+};
+
+&cpsw_port2 {
+    phy-handle = <&lan8720>;
+    phy-mode = "rmii";
+    phys = <&phy_gmii_sel 2>;
+    ti,rmii-clock-in;
+    status = "okay";
+};
+
+&ecap2 {
+    // ECAP2_IN_APWM_OUT (P2.01, PIN105) is shared with MDIO0_MDC (P2.01A, PIN88)
+    status = "disabled";
+};
+
+&main_spi0 {
+    // SPI0_CS0 (P2.31, PIN109) is shared with RMII2_TXD1 (P2.31A, PIN92)
+    status = "disabled";
+};
