@@ -1,0 +1,34 @@
+/dts-v1/;
+/plugin/;
+
+#include <ti/k3-pinctrl.h>
+
+&{/} {
+    pinctrl-names = "default";
+};
+
+&{/chosen} {
+    overlays {
+        pb2-spi0-cs1.kernel = __TIMESTAMP__;
+    };
+};
+
+&main_pmx0 {
+    pb2_spi0_cs1_pins: pb2-spi0-cs1-pins {
+        pinctrl-single,pins = <
+            AM62X_IOPAD(0x01bc, PIN_INPUT, 0)  /* (B14) P2.29 SPI0_CLK  */
+            AM62X_IOPAD(0x01c0, PIN_INPUT, 0)  /* (B13) P2.27 SPI0_D0 (MISO) */
+            AM62X_IOPAD(0x01c4, PIN_OUTPUT, 0) /* (B14) P2.25 SPI0_D1 (MOSI) */
+            AM62X_IOPAD(0x01b8, PIN_OUTPUT, 0) /* (C13) P2.36 SPI0_CS1 */
+        >;
+    };
+};
+
+&main_spi0 {
+    status = "okay";
+    pinctrl-names = "default";
+    pinctrl-0 = <&pb2_spi0_cs1_pins>;
+    #address-cells = <1>;
+    #size-cells = <0>;
+    ti,spi-num-cs = <2>;
+};
