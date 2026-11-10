@@ -2,8 +2,8 @@
 
 Unlike the original PocketBeagle, PocketBeagle 2 exposes RMII signals on its expansion headers, so a native ethernet cape (not USB or SPI) is now possible.
 
-![cape sch](img/pb2eth_sch.jpg)
-![cape brd](img/pb2eth_brd.jpg)
+![cape sch](img/pb2eth_sch.png)
+![cape brd](img/pb2eth_brd.png)
 ![cape photo](img/pb2eth_cape.jpg)
 
 When plugging the cape onto PB2, make sure the PB2 USB-C connector is on the same side as the ethernet transformer.
